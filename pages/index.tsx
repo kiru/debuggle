@@ -1,133 +1,36 @@
 import type {NextPage} from 'next'
 import Head from 'next/head'
-import Image from 'next/image'
 import {FormEventHandler, useEffect, useState} from "react";
 import {solution} from "../components/puzzle";
 import jsTokens from "js-tokens";
+import dynamic from "next/dynamic";
+
+function useStickyState<T>(defaultValue: T, key: string) {
+  const [value, setValue] = useState(() => {
+    const stickyValue = window.localStorage.getItem(key);
+
+    // @ts-ignore
+    return stickyValue !== null
+      ? JSON.parse(stickyValue)
+      : defaultValue;
+  });
+
+  useEffect(() => {
+    // @ts-ignore
+    window.localStorage.setItem(key, JSON.stringify(value));
+  }, [key, value]);
+
+  return [value, setValue];
+}
+
+const Home = dynamic(
+  () => Promise.resolve(HomeInternal),
+  {ssr: false}
+);
 
 
-// const solution = {
-//   id: "32j3",
-//   originalText: " It's not only writers who can benefit from this free online tool. If you're a programmer who's working on a project where blocks of text are needed, this tool can be a great way to get that. It's a good way to test your programming and that the tool being created is working well.\n" +
-//     "\n" +
-//     "Above are a few examples of how the random paragraph generator can be beneficial. The best way to see if this random paragraph picker will be useful for your intended purposes is to give it a try. Generate a number of paragraphs to see if they are beneficial to your current project.\n" +
-//     "\n" +
-//     "If you do find this paragraph tool useful, please do us a favor and let us know how you're using it. It's greatly beneficial for us to know the different ways this tool is being used so we can improve it with updates. This is especially true since there are times when the generators we create get used in completely unanticipated ways from when we initially created them. If you have the time, please send us a quick note on wha",
-//   redactedWords: [
-//     "paragraph",
-//     "writers",
-//     "this",
-//     "best",
-//     "being",
-//     "created",
-//     "them",
-//   ]
-// }
-// const SharePage = () => {
-//   const [textToShow, setTextToShow] = useState<string>()
-//
-//   const [currentWord, setCurrentWord] = useState<string>("")
-//   const [guessedWords, setGuessedWords] = useState<string[]>([])
-//   const [redactedWords, setRedactedWords] = useState<string[]>(solution.redactedWords)
-//   const [wordToCount, setWordToCount] = useState<Map<string, number>>()
-//
-//   useEffect(() => {
-//     const text: string[] = solution.originalText.split(" ");
-//     for (const s of redactedWords) {
-//       for (let i = 0; i < text.length; i++) {
-//         if (text[i].toUpperCase() == s.toUpperCase()) {
-//           text[i] = text[i].replaceAll(RegExp(".", "g"), "█")
-//         }
-//       }
-//     }
-//
-//     // @ts-ignore
-//     const myTokenizer = tokenizer();
-//     let message: Tokenizer.Token[] = myTokenizer.tokenize(solution.originalText);
-//     let wordToCount = new Map<string, number>()
-//     message.forEach(each => {
-//       if (wordToCount.has(each.value)) {
-//         wordToCount.set(each.value, wordToCount.get(each.value)! + 1)
-//       } else {
-//         wordToCount.set(each.value, 1)
-//       }
-//     })
-//
-//     // most common words
-//     setWordToCount(wordToCount)
-//
-//     // let's begin the initial message
-//     setTextToShow(text.join(" "))
-//   }, [redactedWords, textToShow, wordToCount])
-//
-//
-//   let onSubmit: FormEventHandler = (e) => {
-//     e.preventDefault();
-//     console.log("submit");
-//
-//     setGuessedWords((prev) => {
-//       return [...prev, currentWord];
-//     })
-//
-//
-//     if (redactedWords.indexOf(currentWord, 0) != -1) {
-//       console.log("ja");
-//       setRedactedWords(prev => {
-//         return prev.filter(each => each != currentWord)
-//       })
-//     }
-//     setCurrentWord("")
-//   };
-//
-//   return (
-//     <>
-//       <Head>
-//         <title>Classroomle - Trendy teaching</title>
-//         <link rel="icon" href="/favicon.ico"/>
-//       </Head>
-//
-//       <div className="flex flex-row">
-//         <div className="border-r border-r-blue-300 p-4 h-screen">
-//           <form action="" onSubmit={onSubmit}>
-//             <input name={"text"} className="border p-2" onChange={e => setCurrentWord(e.target.value)}
-//                    value={currentWord}/>
-//           </form>
-//
-//           <div className="mt-4 gap-1 flex flex-col">
-//             {guessedWords?.map(each => {
-//               return <div key={each}>
-//                 {each}
-//               </div>
-//             })}
-//           </div>
-//
-//           <div>
-//             {Array(wordToCount?.values()).map(each => {
-//               return <div>
-//                 {each[0]}
-//               </div>
-//             })}
-//           </div>
-//
-//         </div>
-//         <div className="p-4 max-w-lg font-mono">
-//
-//           <div className="text-sm w-full border-b border-b-300">add progress bar here 0/10</div>
-//
-//           {textToShow?.split("\n").map((each, i) => {
-//             return <div key={i} className="p-1">{each}</div>
-//           })}
-//         </div>
-//       </div>
-//     </>
-//   )
-// }
-
-
-const Home: NextPage = () => {
-
-
-  const [redactedCode, setRedactedCode] = useState<string>("")
+const HomeInternal: NextPage = () => {
+  const [redactedCode, setRedactedCode] = useStickyState<string>("", `guessedWords${solution.id}`)
 
   const [currentWord, setCurrentWord] = useState<string>("")
   const [guessedWords, setGuessedWords] = useState<string[]>([])
@@ -135,6 +38,10 @@ const Home: NextPage = () => {
   const isGuessed = (word: string) => {
     return guessedWords.indexOf(word, 0) != -1
   }
+
+  useEffect(() => {
+    console.log("Hi there. Are you looking for the solution in the code? It is easier than you think. If you see this message, ping me on twitter @kiru_io");
+  }, [])
 
   useEffect(() => {
 
@@ -145,9 +52,9 @@ const Home: NextPage = () => {
       if (each.type == "SingleLineComment") {
 
         return each.value.split(" ").map(comWord => {
-          if(isGuessed(comWord)){
+          if (isGuessed(comWord)) {
             return comWord;
-          }else{
+          } else {
             return "█".repeat(comWord.length)
           }
         }).join(" ");
@@ -169,7 +76,11 @@ const Home: NextPage = () => {
     e.preventDefault();
 
     setGuessedWords((prev) => {
-      return [...prev, currentWord];
+      if (!isGuessed(currentWord)) {
+        return [...prev, currentWord];
+      } else {
+        return prev;
+      }
     })
 
     setCurrentWord("")
@@ -180,7 +91,7 @@ const Home: NextPage = () => {
   return (
     <div className="bg-[#252526] text-white">
       <Head>
-        <title>Debuggle</title>
+        <title>Debugle</title>
         <link rel="icon" href="/favicon.ico"/>
       </Head>
 

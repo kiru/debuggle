@@ -1,6 +1,6 @@
 export const solution = {
   id: 1,
-  code: `sort(originalArray) {
+  code: `function(originalArray) {
     // Clone original array to prevent it from modification.
     const array = [...originalArray];
 
@@ -21,12 +21,9 @@ export const solution = {
     while (array.length) {
       const currentElement = array.shift();
 
-      // Call visiting callback.
-      this.callbacks.visitingCallback(currentElement);
-
-      if (this.comparator.equal(currentElement, pivotElement)) {
+      if (currentElement == pivotElement) {
         centerArray.push(currentElement);
-      } else if (this.comparator.lessThan(currentElement, pivotElement)) {
+      } else if (currentElement < pivotElement) {
         leftArray.push(currentElement);
       } else {
         rightArray.push(currentElement);
