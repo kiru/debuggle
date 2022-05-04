@@ -1,6 +1,6 @@
 export const solution = {
   id: 1,
-  code: `function(originalArray) {
+  code: `function quickSort(originalArray) {
     // Clone original array to prevent it from modification.
     const array = [...originalArray];
 
