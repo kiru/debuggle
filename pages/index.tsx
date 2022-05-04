@@ -4,6 +4,7 @@ import {FormEventHandler, useEffect, useState} from "react";
 import {solution} from "../components/puzzle";
 import jsTokens from "js-tokens";
 import dynamic from "next/dynamic";
+import Script from 'next/script';
 
 function useStickyState<T>(defaultValue: T, key: string) {
   const [value, setValue] = useState(() => {
@@ -93,6 +94,8 @@ const HomeInternal: NextPage = () => {
       <Head>
         <title>Debugle</title>
         <link rel="icon" href="/favicon.ico"/>
+        <Script defer data-domain="debugle.net" src="https://plausible.io/js/plausible.js" />
+
       </Head>
 
       <main>
