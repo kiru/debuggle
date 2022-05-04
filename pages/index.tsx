@@ -1,84 +1,222 @@
-import type { NextPage } from 'next'
+import type {NextPage} from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
+import {FormEventHandler, useEffect, useState} from "react";
+import {solution} from "../components/puzzle";
+import jsTokens from "js-tokens";
+
+
+// const solution = {
+//   id: "32j3",
+//   originalText: " It's not only writers who can benefit from this free online tool. If you're a programmer who's working on a project where blocks of text are needed, this tool can be a great way to get that. It's a good way to test your programming and that the tool being created is working well.\n" +
+//     "\n" +
+//     "Above are a few examples of how the random paragraph generator can be beneficial. The best way to see if this random paragraph picker will be useful for your intended purposes is to give it a try. Generate a number of paragraphs to see if they are beneficial to your current project.\n" +
+//     "\n" +
+//     "If you do find this paragraph tool useful, please do us a favor and let us know how you're using it. It's greatly beneficial for us to know the different ways this tool is being used so we can improve it with updates. This is especially true since there are times when the generators we create get used in completely unanticipated ways from when we initially created them. If you have the time, please send us a quick note on wha",
+//   redactedWords: [
+//     "paragraph",
+//     "writers",
+//     "this",
+//     "best",
+//     "being",
+//     "created",
+//     "them",
+//   ]
+// }
+// const SharePage = () => {
+//   const [textToShow, setTextToShow] = useState<string>()
+//
+//   const [currentWord, setCurrentWord] = useState<string>("")
+//   const [guessedWords, setGuessedWords] = useState<string[]>([])
+//   const [redactedWords, setRedactedWords] = useState<string[]>(solution.redactedWords)
+//   const [wordToCount, setWordToCount] = useState<Map<string, number>>()
+//
+//   useEffect(() => {
+//     const text: string[] = solution.originalText.split(" ");
+//     for (const s of redactedWords) {
+//       for (let i = 0; i < text.length; i++) {
+//         if (text[i].toUpperCase() == s.toUpperCase()) {
+//           text[i] = text[i].replaceAll(RegExp(".", "g"), "█")
+//         }
+//       }
+//     }
+//
+//     // @ts-ignore
+//     const myTokenizer = tokenizer();
+//     let message: Tokenizer.Token[] = myTokenizer.tokenize(solution.originalText);
+//     let wordToCount = new Map<string, number>()
+//     message.forEach(each => {
+//       if (wordToCount.has(each.value)) {
+//         wordToCount.set(each.value, wordToCount.get(each.value)! + 1)
+//       } else {
+//         wordToCount.set(each.value, 1)
+//       }
+//     })
+//
+//     // most common words
+//     setWordToCount(wordToCount)
+//
+//     // let's begin the initial message
+//     setTextToShow(text.join(" "))
+//   }, [redactedWords, textToShow, wordToCount])
+//
+//
+//   let onSubmit: FormEventHandler = (e) => {
+//     e.preventDefault();
+//     console.log("submit");
+//
+//     setGuessedWords((prev) => {
+//       return [...prev, currentWord];
+//     })
+//
+//
+//     if (redactedWords.indexOf(currentWord, 0) != -1) {
+//       console.log("ja");
+//       setRedactedWords(prev => {
+//         return prev.filter(each => each != currentWord)
+//       })
+//     }
+//     setCurrentWord("")
+//   };
+//
+//   return (
+//     <>
+//       <Head>
+//         <title>Classroomle - Trendy teaching</title>
+//         <link rel="icon" href="/favicon.ico"/>
+//       </Head>
+//
+//       <div className="flex flex-row">
+//         <div className="border-r border-r-blue-300 p-4 h-screen">
+//           <form action="" onSubmit={onSubmit}>
+//             <input name={"text"} className="border p-2" onChange={e => setCurrentWord(e.target.value)}
+//                    value={currentWord}/>
+//           </form>
+//
+//           <div className="mt-4 gap-1 flex flex-col">
+//             {guessedWords?.map(each => {
+//               return <div key={each}>
+//                 {each}
+//               </div>
+//             })}
+//           </div>
+//
+//           <div>
+//             {Array(wordToCount?.values()).map(each => {
+//               return <div>
+//                 {each[0]}
+//               </div>
+//             })}
+//           </div>
+//
+//         </div>
+//         <div className="p-4 max-w-lg font-mono">
+//
+//           <div className="text-sm w-full border-b border-b-300">add progress bar here 0/10</div>
+//
+//           {textToShow?.split("\n").map((each, i) => {
+//             return <div key={i} className="p-1">{each}</div>
+//           })}
+//         </div>
+//       </div>
+//     </>
+//   )
+// }
+
 
 const Home: NextPage = () => {
+
+
+  const [redactedCode, setRedactedCode] = useState<string>("")
+
+  const [currentWord, setCurrentWord] = useState<string>("")
+  const [guessedWords, setGuessedWords] = useState<string[]>([])
+
+  const isGuessed = (word: string) => {
+    return guessedWords.indexOf(word, 0) != -1
+  }
+
+  useEffect(() => {
+
+    const abc = jsTokens(solution.code);
+    const tokens = Array.from(abc)
+    setRedactedCode(tokens.map(each => {
+
+      if (each.type == "SingleLineComment") {
+
+        return each.value.split(" ").map(comWord => {
+          if(isGuessed(comWord)){
+            return comWord;
+          }else{
+            return "█".repeat(comWord.length)
+          }
+        }).join(" ");
+
+      } else {
+        if (isGuessed(each.value)) {
+          return each.value;
+        } else {
+          if (each.type == "WhiteSpace" || each.type == "LineTerminatorSequence") {
+            return each.value;
+          }
+          return "█".repeat(each.value.length)
+        }
+      }
+    }).join(""))
+  }, [guessedWords])
+
+  let onSubmit: FormEventHandler = (e) => {
+    e.preventDefault();
+
+    setGuessedWords((prev) => {
+      return [...prev, currentWord];
+    })
+
+    setCurrentWord("")
+  };
+  const b = "quicksort"
+  const a = b.replace(RegExp(".", "g"), "█")
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center py-2">
+    <div className="bg-[#252526] text-white">
       <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
+        <title>Debuggle</title>
+        <link rel="icon" href="/favicon.ico"/>
       </Head>
 
-      <main className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
-        <h1 className="text-6xl font-bold">
-          Welcome to{' '}
-          <a className="text-blue-600" href="https://nextjs.org">
-            Next.js!
-          </a>
-        </h1>
+      <main>
 
-        <p className="mt-3 text-2xl">
-          Get started by editing{' '}
-          <code className="rounded-md bg-gray-100 p-3 font-mono text-lg">
-            pages/index.tsx
-          </code>
-        </p>
+        <div className="flex flex-row min-h-screen">
+          <div className="border-r border-r-gray-300 p-4 ">
+            <form action="" onSubmit={onSubmit}>
+              <input name={"text"} className="rounded p-2 text-black" onChange={e => setCurrentWord(e.target.value)}
+                     value={currentWord}/>
+            </form>
 
-        <div className="mt-6 flex max-w-4xl flex-wrap items-center justify-around sm:w-full">
-          <a
-            href="https://nextjs.org/docs"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Documentation &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Find in-depth information about Next.js features and its API.
-            </p>
-          </a>
+            <div className="mt-4 gap-1 flex flex-col">
+              {guessedWords?.map(each => {
+                return <div key={each}>
+                  {each}
+                </div>
+              })}
+            </div>
 
-          <a
-            href="https://nextjs.org/learn"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Learn &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Learn about Next.js in an interactive course with quizzes!
-            </p>
-          </a>
+          </div>
+          <div className="font-mono w-full">
 
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Examples &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Discover and deploy boilerplate example Next.js projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Deploy &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+            <div className="p-2 text-sm w-full bg-gray-500 italic w-full">
+              {a}<span>.js</span>
+            </div>
+            <div>
+              <div className="p-2 text-left">
+                <pre>{redactedCode}</pre>
+              </div>
+            </div>
+          </div>
         </div>
-      </main>
 
-      <footer className="flex h-24 w-full items-center justify-center border-t">
-        <a
-          className="flex items-center justify-center gap-2"
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-        </a>
-      </footer>
+
+      </main>
     </div>
   )
 }
