@@ -37,7 +37,7 @@ const HomeInternal: NextPage = () => {
   const [guessedWords, setGuessedWords] = useStickyState<string[]>([], `guessedWordList${solution.id}`)
 
   const isGuessed = (word: string) => {
-    return guessedWords.indexOf(word, 0) != -1
+    return guessedWords.indexOf(word.toLowerCase(), 0) != -1
   }
 
   useEffect(() => {
@@ -78,7 +78,7 @@ const HomeInternal: NextPage = () => {
 
     setGuessedWords((prev: string[]) => {
       if (!isGuessed(currentWord)) {
-        return [...prev, currentWord];
+        return [...prev, currentWord.toLowerCase()];
       } else {
         return prev;
       }
