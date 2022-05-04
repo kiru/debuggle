@@ -31,10 +31,10 @@ const Home = dynamic(
 
 
 const HomeInternal: NextPage = () => {
-  const [redactedCode, setRedactedCode] = useStickyState<string>("", `guessedWords${solution.id}`)
+  const [redactedCode, setRedactedCode] = useState<string>("")
 
   const [currentWord, setCurrentWord] = useState<string>("")
-  const [guessedWords, setGuessedWords] = useState<string[]>([])
+  const [guessedWords, setGuessedWords] = useStickyState<string[]>([], `guessedWordList${solution.id}`)
 
   const isGuessed = (word: string) => {
     return guessedWords.indexOf(word, 0) != -1
@@ -76,7 +76,7 @@ const HomeInternal: NextPage = () => {
   let onSubmit: FormEventHandler = (e) => {
     e.preventDefault();
 
-    setGuessedWords((prev) => {
+    setGuessedWords((prev: string[]) => {
       if (!isGuessed(currentWord)) {
         return [...prev, currentWord];
       } else {
@@ -94,7 +94,7 @@ const HomeInternal: NextPage = () => {
       <Head>
         <title>Debugle</title>
         <link rel="icon" href="/favicon.ico"/>
-        <Script defer data-domain="debugle.net" src="https://plausible.io/js/plausible.js" />
+        <Script defer data-domain="debugle.net" src="https://plausible.io/js/plausible.js"/>
 
       </Head>
 
@@ -108,7 +108,7 @@ const HomeInternal: NextPage = () => {
             </form>
 
             <div className="mt-4 gap-1 flex flex-col">
-              {guessedWords?.map(each => {
+              {guessedWords?.map((each: string) => {
                 return <div key={each}>
                   {each}
                 </div>
