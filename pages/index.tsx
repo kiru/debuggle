@@ -5,8 +5,10 @@ import {solution} from "../components/puzzle";
 import jsTokens, {Token} from "js-tokens";
 import dynamic from "next/dynamic";
 
+const solutionTokens = Array.from(jsTokens(solution.code))
+const stringToCount = bla()
+
 function bla() {
-  const solutionTokens = Array.from(jsTokens(solution.code))
   const stringToCount = new Map<string, number>()
 
   function inc(w: string) {
@@ -39,8 +41,6 @@ function bla() {
   return stringToCount;
 }
 
-const solutionTokens = Array.from(jsTokens(solution.code))
-const stringToCount = bla()
 
 function useStickyState<T>(defaultValue: T, key: string) {
   const [value, setValue] = useState(() => {
