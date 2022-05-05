@@ -222,15 +222,20 @@ let ExplanationDialog = (props: { open: boolean, setOpen: (value: boolean) => vo
                     </div>
                     <div>
                       You have unlimited tries. Your goal is to guess the filename.
-                      Once you guessed a word which appears in the solution, the whole code is going to be revealed.
+                      Once you guessed the full filename, the whole code will to be revealed.
                     </div>
                     <div>
-                      The numbers shows you how many times the word appeared.
+                      The numbers shows you how many times the word appears.
                       A new code-puzzle will be published every day.
                     </div>
 
                     <div>
                       If you find this too boring, try Senior-Programmer-mode, where you have to reveal the whole code.
+                    </div>
+
+                    <div>
+                      This page is inspired by <a  target="_blank" href="https://www.redactle.com/" className="hover:text-blue-200">Redactle</a>.
+
                     </div>
 
                     <div className="text-red-200">
@@ -533,7 +538,7 @@ export const SettingDialog = (props: { open: boolean, setOpen: any, settings: Se
                             </Switch.Label>
 
                             <Switch.Description className="text-gray-500 dark:text-white">
-                              Instead of just finding the filename, your gaol is to find the whole source code.
+                              Instead of just finding the filename, your goal is to find the whole source code.
                             </Switch.Description>
                           </div>
                           <Switch checked={props.settings.hardCore} onChange={setHardCore}
