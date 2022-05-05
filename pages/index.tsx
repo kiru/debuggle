@@ -10,7 +10,7 @@ import {toast, Toaster} from 'react-hot-toast';
 import {PopupManager, PopupToShow} from "../components/modals/Dialogs";
 import {GameState, GameStats, Settings} from "../lib/types";
 import {debug} from "../lib/commons";
-import { CogIcon, InformationCircleIcon, LibraryIcon} from "@heroicons/react/solid";
+import {CogIcon, InformationCircleIcon, LibraryIcon} from "@heroicons/react/solid";
 
 const solutionTokens = Array.from(jsTokens(solution.code))
 const stringToCount = calculateOccurence()
@@ -128,9 +128,6 @@ const HomeInternal: NextPage = () => {
       .join("")
   }
 
-  const isSolved = redactPartially(solution.filename) == solution.filename
-  const [solvedOnce, setSolvedOnce] = useState<boolean>(isSolved)
-
   useEffect(() => {
     console.log("Hi there. Are you looking for the solution in the code? " +
       "It is easier than you think. If you see this message, ping me on twitter @kiru_io");
@@ -161,9 +158,22 @@ const HomeInternal: NextPage = () => {
     }).join(""))
 
 
-    if (!solvedOnce && redactPartially(solution.filename) == solution.filename) {
-      toast.success("Good job!", {id: "solved", duration: 2000})
-      setSolvedOnce(true)
+    if (!gameState.gameEnded) {
+      let isSolved = false
+      if (settings.hardCore) {
+        if (getPercentage() == "100%") {
+          isSolved = true;
+        }
+      } else {
+        isSolved = redactPartially(solution.filename) == solution.filename
+      }
+
+      if (isSolved) {
+        toast.success("Good job!", {id: "solved", duration: 2000})
+        setGameState((prev: GameState) => {
+          return {...prev, gameEnded: true}
+        })
+      }
     }
   }, [gameState])
 
@@ -254,8 +264,8 @@ const HomeInternal: NextPage = () => {
               </form>
 
               <div className="mt-4 gap-1 flex flex-col ">
-                {gameState.guessedWords?.filter((each:string) => {
-                  if(settings.hideZero){
+                {gameState.guessedWords?.filter((each: string) => {
+                  if (settings.hideZero) {
                     return stringToCount.has(each.toLowerCase());
                   }
                   return true;
@@ -274,7 +284,7 @@ const HomeInternal: NextPage = () => {
           <div className="font-mono w-full">
             <div className={classNames(
               "p-2 text-sm w-full italic w-full",
-              {'bg-green-800': isSolved, 'bg-gray-700': !isSolved}
+              {'bg-green-800': gameState.gameEnded, 'bg-gray-700': !gameState.gameEnded}
             )}>
               {redactPartially(solution.filename)}<span>.{solution.extension}</span>
             </div>
@@ -285,8 +295,8 @@ const HomeInternal: NextPage = () => {
 
               <div className="p-2 text-left">
                 <pre className="tracking-tight">
-                  {!solvedOnce && redactedCode}
-                  {solvedOnce && solution.code}
+                  {!gameState.gameEnded && redactedCode}
+                  {gameState.gameEnded && solution.code}
                 </pre>
               </div>
             </div>
