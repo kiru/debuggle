@@ -27,18 +27,18 @@ const StatItem = ({
 
 export const StatBar = ({ gameStats }: Props) => {
   function getAverage() {
-    if(gameStats.tries.length == 0){
+    if(gameStats.timings.length == 0){
       return (0).toFixed(2);
     }
 
-    let avg = sumTogether(gameStats.tries) / gameStats.tries.length;
+    let avg = sumTogether(gameStats.timings.map(each => each.tries)) / gameStats.timings.length;
 
     return (avg / 1000).toFixed(2);
   }
 
   return (
     <div className="flex justify-center my-2">
-      <StatItem label={TOTAL_TRIES_TEXT} value={gameStats.tries.length} />
+      <StatItem label={TOTAL_TRIES_TEXT} value={gameStats.timings.length} />
       <StatItem label="Average" value={`${(getAverage())}`}/>
       <StatItem label={CURRENT_STREAK_TEXT} value={gameStats.currentStreak} />
       <StatItem label={BEST_STREAK_TEXT} value={gameStats.bestStreak} />

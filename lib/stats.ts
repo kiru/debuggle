@@ -3,14 +3,15 @@ import {GameStats, StatsTiming} from "./types";
 export const addStatsForCompletedGame = (
   gameStats: GameStats,
   gameId:number,
-  timeInMsPerRow: number[]
+  tries: number
 ): GameStats => {
   // Count is number of incorrect guesses before end.
   const stats = { ...gameStats }
 
   let highestGameId = Math.max(...stats.timings.map(each => each.gameId))
+
   let time: StatsTiming = {
-    timePerRowInMs: timeInMsPerRow,
+    tries: tries,
     gameId: gameId
   }
   stats.timings = [...stats.timings, time]

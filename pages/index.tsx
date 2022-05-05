@@ -78,7 +78,7 @@ const HomeInternal: NextPage = () => {
   const [stats, setStats] = useStickyState<GameStats>({
     currentStreak: 0,
     bestStreak: 0,
-    tries: []
+    timings: []
   }, "gameStats")
 
   const defaultGameState: GameState = {

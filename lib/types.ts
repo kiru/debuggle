@@ -12,8 +12,13 @@ export interface GameState {
   gameEnded: boolean;
 }
 
+export type StatsTiming = {
+  gameId: number;
+  tries: number;
+}
+
 export type GameStats = {
-  tries: number[]
+  timings: StatsTiming[]
   currentStreak: number
   bestStreak: number
 }
