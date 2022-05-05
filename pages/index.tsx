@@ -152,8 +152,20 @@ const HomeInternal: NextPage = () => {
   return (
     <div className="bg-[#252526] text-white">
       <Head>
-        <title>Debugle</title>
+        <title>Debuggle :: Find a known algorithm</title>
         <link rel="icon" href="/favicon.ico"/>
+
+
+        <meta name="description"
+              content="Find a known redacted algorithm word by word. Every day a new algorithm"/>
+
+        <meta property="og:url" content="https://debuggle.net/"/>
+        <meta property="og:type" content="website"/>
+        <meta property="og:site_name" content="Debuggle"/>
+        <meta property="og:description"
+              content="Find a known redacted algorithm word by word. Every day a new algorithm"/>
+        <meta property="og:title" content="Find a known redacted algorithm word by word. Every day a new algorithm"/>
+        {/*<meta property="og:image" content="https://learnle.net/TwitterCard.png"/>*/}
       </Head>
 
       <main>
