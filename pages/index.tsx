@@ -108,24 +108,31 @@ const HomeInternal: NextPage = () => {
 
         <div className="flex flex-row min-h-screen">
 
-          <div className="border-r border-r-gray-300 p-4 pr-8 overflow-auto	overflow-x-hidden">
-            <form action="" onSubmit={onSubmit}>
-              <input name={"text"} className="rounded p-2 text-black" onChange={e => setCurrentWord(e.target.value)}
-                     value={currentWord}/>
-            </form>
+          <div className="border-r border-r-gray-300">
+            <div className="p-2 text-sm w-full bg-gray-500 italic w-full">
+              Debuggle
+            </div>
 
-            <div className="mt-4 gap-1 flex flex-col">
-              {guessedWords?.map((each: string) => {
-                return <div key={each}>
-                  {each}
-                </div>
-              })}
+            <div className="p-4">
+              <form action="" onSubmit={onSubmit}>
+                <input name={"text"} className="rounded p-2 text-black" onChange={e => setCurrentWord(e.target.value)}
+                       value={currentWord}/>
+              </form>
+
+              <div className="mt-4 gap-1 flex flex-col">
+                {guessedWords?.map((each: string) => {
+                  return <div key={each}>
+                    {each}
+                  </div>
+                })}
+              </div>
             </div>
 
           </div>
           <div className="font-mono w-full">
+
             <div className="p-2 text-sm w-full bg-gray-500 italic w-full">
-              {solution.filename.replace(RegExp(".", "g"), "█")}<span>.{solution.extension}</span>
+              {redactPartially(solution.filename)}<span>.{solution.extension}</span>
             </div>
             <div>
               <div className="p-2 text-left">
