@@ -2,11 +2,45 @@ import type {NextPage} from 'next'
 import Head from 'next/head'
 import {FormEventHandler, useEffect, useState} from "react";
 import {solution} from "../components/puzzle";
-import jsTokens from "js-tokens";
+import jsTokens, {Token} from "js-tokens";
 import dynamic from "next/dynamic";
 
+function bla() {
+  const solutionTokens = Array.from(jsTokens(solution.code))
+  const stringToCount = new Map<string, number>()
+
+  function inc(w: string) {
+    w = w.toLowerCase()
+    if (stringToCount.has(w)) {
+      stringToCount.set(w, stringToCount.get(w)! + 1)
+    } else {
+      stringToCount.set(w, 1)
+    }
+  }
+
+  solutionTokens.forEach(token => {
+    if (token.type == "SingleLineComment") {
+      return token.value.split(" ")
+        .forEach(singleWord => {
+          inc(singleWord)
+          singleWord.replace(/([a-z])([A-Z])/g, '$1 $2')
+            .split(" ")
+            .forEach(o => inc(o))
+        });
+    } else {
+      if (!(token.type == "WhiteSpace" || token.type == "LineTerminatorSequence")) {
+        inc(token.value)
+        token.value.replace(/([a-z])([A-Z])/g, '$1 $2')
+          .split(" ")
+          .forEach(o => inc(o))
+      }
+    }
+  })
+  return stringToCount;
+}
 
 const solutionTokens = Array.from(jsTokens(solution.code))
+const stringToCount = bla()
 
 function useStickyState<T>(defaultValue: T, key: string) {
   const [value, setValue] = useState(() => {
@@ -109,20 +143,22 @@ const HomeInternal: NextPage = () => {
         <div className="flex flex-row min-h-screen">
 
           <div className="border-r border-r-gray-300">
-            <div className="p-2 text-sm w-full bg-gray-500 italic w-full">
+            <div className="p-2 pl-4 text-sm w-full bg-gray-700 w-full uppercase">
               Debuggle
             </div>
 
             <div className="p-4">
               <form action="" onSubmit={onSubmit}>
-                <input name={"text"} className="rounded p-2 text-black" onChange={e => setCurrentWord(e.target.value)}
+                <input name={"text"} className="rounded p-2 text-black focus:outline-slate-400 rounded-sm"
+                       onChange={e => setCurrentWord(e.target.value)}
                        value={currentWord}/>
               </form>
 
               <div className="mt-4 gap-1 flex flex-col">
                 {guessedWords?.map((each: string) => {
-                  return <div key={each}>
-                    {each}
+                  return <div key={each} className="px-1 flex hover:bg-gray-700 ">
+                    <div className="flex-grow">{each}</div>
+                    <div>{stringToCount.get(each.toLowerCase())}</div>
                   </div>
                 })}
               </div>
@@ -131,7 +167,7 @@ const HomeInternal: NextPage = () => {
           </div>
           <div className="font-mono w-full">
 
-            <div className="p-2 text-sm w-full bg-gray-500 italic w-full">
+            <div className="p-2 text-sm w-full bg-gray-700 italic w-full">
               {redactPartially(solution.filename)}<span>.{solution.extension}</span>
             </div>
             <div>
