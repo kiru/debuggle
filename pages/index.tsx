@@ -204,7 +204,9 @@ const HomeInternal: NextPage = () => {
                 {guessedWords?.map((each: string) => {
                   return <div key={each} className="px-1 flex hover:bg-gray-700 ">
                     <div className="flex-grow">{each}</div>
-                    <div>{stringToCount.get(each.toLowerCase())}</div>
+                    <div>{
+                      !stringToCount.has(each.toLowerCase()) ?  0 : stringToCount.get(each.toLowerCase())
+                    }</div>
                   </div>
                 })}
               </div>
