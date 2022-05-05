@@ -5,11 +5,13 @@ import {solution} from "../components/puzzle";
 import jsTokens, {Token} from "js-tokens";
 import dynamic from "next/dynamic";
 import classNames from "classnames";
+import {string} from "prop-types";
+import {toast, Toaster} from 'react-hot-toast';
 
 const solutionTokens = Array.from(jsTokens(solution.code))
-const stringToCount = bla()
+const stringToCount = calculateOccurence()
 
-function bla() {
+function calculateOccurence() {
   const stringToCount = new Map<string, number>()
 
   function inc(w: string) {
@@ -25,14 +27,12 @@ function bla() {
     if (token.type == "SingleLineComment") {
       return token.value.split(" ")
         .forEach(singleWord => {
-          inc(singleWord)
           singleWord.replace(/([a-z])([A-Z])/g, '$1 $2')
             .split(" ")
             .forEach(o => inc(o))
         });
     } else {
       if (!(token.type == "WhiteSpace" || token.type == "LineTerminatorSequence")) {
-        inc(token.value)
         token.value.replace(/([a-z])([A-Z])/g, '$1 $2')
           .split(" ")
           .forEach(o => inc(o))
@@ -73,6 +73,7 @@ const HomeInternal: NextPage = () => {
   const [currentWord, setCurrentWord] = useState<string>("")
   const [guessedWords, setGuessedWords] = useStickyState<string[]>([], `guessedWordList${solution.id}`)
 
+
   const isGuessed = (word: string) => {
     return guessedWords.indexOf(word.toLowerCase(), 0) != -1
   }
@@ -90,8 +91,12 @@ const HomeInternal: NextPage = () => {
       .join("")
   }
 
+  const isSolved = redactPartially(solution.filename) == solution.filename
+  const [solvedOnce, setSolvedOnce] = useState<boolean>(isSolved)
+
   useEffect(() => {
-    console.log("Hi there. Are you looking for the solution in the code? It is easier than you think. If you see this message, ping me on twitter @kiru_io");
+    console.log("Hi there. Are you looking for the solution in the code? " +
+      "It is easier than you think. If you see this message, ping me on twitter @kiru_io");
   }, [])
 
   useEffect(() => {
@@ -117,12 +122,19 @@ const HomeInternal: NextPage = () => {
         }
       }
     }).join(""))
+
+
+    if(!solvedOnce && redactPartially(solution.filename) == solution.filename){
+      toast.success("Good job!", {id: "solved", duration: 2000})
+      setSolvedOnce(true)
+    }
   }, [guessedWords])
 
   let onSubmit: FormEventHandler = (e) => {
     e.preventDefault();
 
     setGuessedWords((prev: string[]) => {
+      // add to the list in case it's not there yet
       if (!isGuessed(currentWord)) {
         return [...prev, currentWord.toLowerCase()];
       } else {
@@ -137,10 +149,12 @@ const HomeInternal: NextPage = () => {
     let length = 0
     let guessed = 0;
 
+    // get total count
     Array.from(stringToCount.keys()).forEach(each => {
       length += stringToCount.get(each)!
     })
 
+    // count guessed words
     for (const each of guessedWords) {
       if (stringToCount.has(each)) {
         guessed += stringToCount.get(each)!
@@ -149,8 +163,6 @@ const HomeInternal: NextPage = () => {
 
     return `${Math.floor(guessed / length * 100)}%`
   }
-
-  const solved = redactPartially(solution.filename) == solution.filename
 
   return (
     <div className="bg-[#252526] text-white">
@@ -188,7 +200,7 @@ const HomeInternal: NextPage = () => {
                        value={currentWord}/>
               </form>
 
-              <div className="mt-4 gap-1 flex flex-col">
+              <div className="mt-4 gap-1 flex flex-col ">
                 {guessedWords?.map((each: string) => {
                   return <div key={each} className="px-1 flex hover:bg-gray-700 ">
                     <div className="flex-grow">{each}</div>
@@ -202,23 +214,25 @@ const HomeInternal: NextPage = () => {
           <div className="font-mono w-full">
             <div className={classNames(
               "p-2 text-sm w-full italic w-full",
-              {'bg-green-800': solved, 'bg-gray-700': !solved}
-              )}>
+              {'bg-green-800': isSolved, 'bg-gray-700': !isSolved}
+            )}>
               {redactPartially(solution.filename)}<span>.{solution.extension}</span>
             </div>
             <div>
               <div className="w-full bg-gray-200 h-1.5">
-                <div className="bg-gray-600 h-1.5" style={{width: getPercentage()}}/>
+                <div className="bg-gray-600 h-1.5 transition-all duration-300" style={{width: getPercentage()}}/>
               </div>
 
               <div className="p-2 text-left">
-                <pre className="tracking-tight">{redactedCode}</pre>
+                <pre className="tracking-tight">
+                  {!solvedOnce && redactedCode}
+                  {solvedOnce && solution.code}
+                </pre>
               </div>
             </div>
           </div>
         </div>
-
-
+        <div><Toaster/></div>
       </main>
 
       <a target="_blank" href="https://kiru.io/"
