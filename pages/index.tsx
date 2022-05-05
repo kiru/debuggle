@@ -4,7 +4,9 @@ import {FormEventHandler, useEffect, useState} from "react";
 import {solution} from "../components/puzzle";
 import jsTokens from "js-tokens";
 import dynamic from "next/dynamic";
-import Script from 'next/script';
+
+
+const solutionTokens = Array.from(jsTokens(solution.code))
 
 function useStickyState<T>(defaultValue: T, key: string) {
   const [value, setValue] = useState(() => {
@@ -40,34 +42,43 @@ const HomeInternal: NextPage = () => {
     return guessedWords.indexOf(word.toLowerCase(), 0) != -1
   }
 
+  const redactPartially = (word: string) => {
+    return word.replace(/([a-z])([A-Z])/g, '$1 $2')
+      .split(" ")
+      .map(each => {
+        if (isGuessed(each)) {
+          return each
+        } else {
+          return "█".repeat(each.length)
+        }
+      })
+      .join("")
+  }
+
   useEffect(() => {
     console.log("Hi there. Are you looking for the solution in the code? It is easier than you think. If you see this message, ping me on twitter @kiru_io");
   }, [])
 
   useEffect(() => {
-
-    const abc = jsTokens(solution.code);
-    const tokens = Array.from(abc)
-    setRedactedCode(tokens.map(each => {
-
-      if (each.type == "SingleLineComment") {
-
-        return each.value.split(" ").map(comWord => {
-          if (isGuessed(comWord)) {
-            return comWord;
-          } else {
-            return "█".repeat(comWord.length)
-          }
-        }).join(" ");
+    setRedactedCode(solutionTokens.map(token => {
+      // in case of comment, the '//' is only given as a line
+      if (token.type == "SingleLineComment") {
+        return token.value.split(" ")
+          .map(singleWord => {
+            return isGuessed(singleWord) ? singleWord : redactPartially(singleWord);
+          }).join(" ");
 
       } else {
-        if (isGuessed(each.value)) {
-          return each.value;
+        // if word is guessed, reveal
+        if (isGuessed(token.value)) {
+          return token.value;
         } else {
-          if (each.type == "WhiteSpace" || each.type == "LineTerminatorSequence") {
-            return each.value;
+          // otherwise print the line-space
+          if (token.type == "WhiteSpace" || token.type == "LineTerminatorSequence") {
+            return token.value;
           }
-          return "█".repeat(each.value.length)
+          // or replace by placeholder
+          return redactPartially(token.value)
         }
       }
     }).join(""))
@@ -86,22 +97,18 @@ const HomeInternal: NextPage = () => {
 
     setCurrentWord("")
   };
-  const b = "quicksort"
-  const a = b.replace(RegExp(".", "g"), "█")
-
   return (
     <div className="bg-[#252526] text-white">
       <Head>
         <title>Debugle</title>
         <link rel="icon" href="/favicon.ico"/>
-        <Script defer data-domain="debugle.net" src="https://plausible.io/js/plausible.js"/>
-
       </Head>
 
       <main>
 
         <div className="flex flex-row min-h-screen">
-          <div className="border-r border-r-gray-300 p-4 ">
+
+          <div className="border-r border-r-gray-300 p-4 pr-8 overflow-auto	overflow-x-hidden">
             <form action="" onSubmit={onSubmit}>
               <input name={"text"} className="rounded p-2 text-black" onChange={e => setCurrentWord(e.target.value)}
                      value={currentWord}/>
@@ -117,13 +124,12 @@ const HomeInternal: NextPage = () => {
 
           </div>
           <div className="font-mono w-full">
-
             <div className="p-2 text-sm w-full bg-gray-500 italic w-full">
-              {a}<span>.js</span>
+              {solution.filename.replace(RegExp(".", "g"), "█")}<span>.{solution.extension}</span>
             </div>
             <div>
               <div className="p-2 text-left">
-                <pre>{redactedCode}</pre>
+                <pre className="tracking-tight">{redactedCode}</pre>
               </div>
             </div>
           </div>
