@@ -309,10 +309,20 @@ const HomeInternal: NextPage = () => {
         <div><Toaster/></div>
       </main>
 
-      <a target="_blank" href="https://kiru.io/"
-         className="kiru items-center rounded-tl-lg hover:bg-gray-700 hover:text-white bg-blue-700 align-middle ">
-        <img src="https://wordleart.kiru.io/mini-kiru.jpg" alt="Kiru Logo" className="rounded-full h-6 "/><p
-        className="m-1">by Kiru.io</p></a>
+      <div className="kiru m-4 gap-1">
+        <a href="https://kiru.io/" target="_blank">
+          <img src="https://wordleart.kiru.io/mini-kiru.jpg" alt="Kiru Logo" className="h-6 bg-green-800 hover:ring-green-800 hover:ring-2"/>
+        </a>
+        <a href="https://mathlegame.com/" target="_blank">
+          <img src="/mathle-icon.png" alt="Mathle-Logo" className="h-6 bg-green-800 hover:ring-green-800 hover:ring-2"/>
+        </a>
+        <a href="https://reversle.net/" target="_blank">
+          <img src="/reversle-icon.png" alt="Kiru Logo" className="h-6 bg-green-800 hover:ring-green-800 hover:ring-2"/>
+        </a>
+        <a href="https://reversle.net/" target="_blank">
+          <img src="/learnle-icon.png" alt="Kiru Logo" className="h-6 bg-green-800 hover:ring-green-800 hover:ring-2"/>
+        </a>
+      </div>
     </div>
   )
 }

@@ -1,0 +1,6 @@
+This favicon was generated using the following font:
+
+- Font Title: MonteCarlo
+- Font Author: Copyright 2011 The MonteCarlo Project Authors (https://github.com/googlefonts/monte-carlo)
+- Font Source: http://fonts.gstatic.com/s/montecarlo/v7/buEzpo6-f9X01GadLA0G0CoV_NxLeiw.ttf
+- Font License: SIL Open Font License, 1.1 (http://scripts.sil.org/OFL))
