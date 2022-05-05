@@ -269,7 +269,7 @@ const HomeInternal: NextPage = () => {
                     return stringToCount.has(each.toLowerCase());
                   }
                   return true;
-                }).map((each: string) => {
+                }).reverse().map((each: string) => {
                   return <div key={each} className="px-1 flex hover:bg-gray-700 ">
                     <div className="flex-grow">{each}</div>
                     <div>{
