@@ -140,13 +140,13 @@ const HomeInternal: NextPage = () => {
       length += stringToCount.get(each)!
     })
 
-    for(const each of guessedWords){
-      if(stringToCount.has(each)){
+    for (const each of guessedWords) {
+      if (stringToCount.has(each)) {
         guessed += stringToCount.get(each)!
       }
     }
 
-    return `${Math.floor(guessed/length*100)}%`
+    return `${Math.floor(guessed / length * 100)}%`
   }
 
   return (
@@ -155,7 +155,7 @@ const HomeInternal: NextPage = () => {
         <title>Debuggle :: Find a known algorithm</title>
         <link rel="icon" href="/favicon.ico"/>
 
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
         <meta name="description"
               content="Find a known redacted algorithm word by word. Every day a new algorithm"/>
@@ -215,6 +215,11 @@ const HomeInternal: NextPage = () => {
 
 
       </main>
+
+      <a target="_blank" href="https://kiru.io/"
+         className="kiru items-center rounded-tl-lg hover:bg-gray-700 hover:text-white bg-blue-700 align-middle ">
+        <img src="https://wordleart.kiru.io/mini-kiru.jpg" alt="Kiru Logo" className="rounded-full h-6 "/><p
+        className="m-1">by Kiru.io</p></a>
     </div>
   )
 }

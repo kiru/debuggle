@@ -13,3 +13,4 @@ x hide solution from the users, without revealing it
 □ add logo
 □ add puzzles for the next 10 days
 □ low: fix the light bar
+□ add link to kiru.io
