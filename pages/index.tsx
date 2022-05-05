@@ -131,6 +131,24 @@ const HomeInternal: NextPage = () => {
 
     setCurrentWord("")
   };
+
+  let getPercentage = () => {
+    let length = 0
+    let guessed = 0;
+
+    Array.from(stringToCount.keys()).forEach(each => {
+      length += stringToCount.get(each)!
+    })
+
+    for(const each of guessedWords){
+      if(stringToCount.has(each)){
+        guessed += stringToCount.get(each)!
+      }
+    }
+
+    return `${Math.floor(guessed/length*100)}%`
+  }
+
   return (
     <div className="bg-[#252526] text-white">
       <Head>
@@ -146,6 +164,7 @@ const HomeInternal: NextPage = () => {
             <div className="p-2 pl-4 text-sm w-full bg-gray-700 w-full uppercase">
               Debuggle
             </div>
+            <div className="w-full bg-gray-600 h-1.5"></div>
 
             <div className="p-4">
               <form action="" onSubmit={onSubmit}>
@@ -166,11 +185,15 @@ const HomeInternal: NextPage = () => {
 
           </div>
           <div className="font-mono w-full">
-
             <div className="p-2 text-sm w-full bg-gray-700 italic w-full">
               {redactPartially(solution.filename)}<span>.{solution.extension}</span>
+
             </div>
             <div>
+              <div className="w-full bg-gray-200 h-1.5">
+                <div className="bg-gray-600 h-1.5" style={{width: getPercentage()}}></div>
+              </div>
+
               <div className="p-2 text-left">
                 <pre className="tracking-tight">{redactedCode}</pre>
               </div>
