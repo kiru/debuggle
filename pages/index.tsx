@@ -7,6 +7,10 @@ import dynamic from "next/dynamic";
 import classNames from "classnames";
 import {string} from "prop-types";
 import {toast, Toaster} from 'react-hot-toast';
+import {PopupManager, PopupToShow} from "../components/modals/Dialogs";
+import {GameState, GameStats, Settings} from "../lib/types";
+import {debug} from "../lib/commons";
+import { CogIcon, InformationCircleIcon, LibraryIcon} from "@heroicons/react/solid";
 
 const solutionTokens = Array.from(jsTokens(solution.code))
 const stringToCount = calculateOccurence()
@@ -69,13 +73,46 @@ const Home = dynamic(
 
 const HomeInternal: NextPage = () => {
   const [redactedCode, setRedactedCode] = useState<string>("")
-
   const [currentWord, setCurrentWord] = useState<string>("")
-  const [guessedWords, setGuessedWords] = useStickyState<string[]>([], `guessedWordList${solution.id}`)
+  const [popupToShow, setPopupToShow] = useState<PopupToShow>(PopupToShow.NONE);
+  const [stats, setStats] = useStickyState<GameStats>({
+    currentStreak: 0,
+    bestStreak: 0,
+    tries: []
+  }, "gameStats")
 
+  const defaultGameState: GameState = {
+    gameId: solution.id,
+    guessedWords: [],
+    gameEnded: false,
+  };
+  const [gameState, setGameState] = useStickyState<GameState>(defaultGameState, "gameStateDebuggle");
+
+  const [settings, setSettings] = useStickyState<Settings>({
+    firstExplanation: true,
+    hardCore: false,
+    hideZero: false
+  }, "settings");
+
+  useEffect(() => {
+    // show initial popup if needed
+    if (settings.firstExplanation) {
+      debug("show first time help message")
+      setPopupToShow(PopupToShow.HELP);
+      setSettings({...settings, firstExplanation: false})
+    }
+  }, [settings])
+
+  useEffect(() => {
+    // game id changed, so we have to reset the current settings
+    if (gameState.gameId != solution.id) {
+      debug("Puzzle changed!")
+      setGameState(defaultGameState)
+    }
+  }, [gameState])
 
   const isGuessed = (word: string) => {
-    return guessedWords.indexOf(word.toLowerCase(), 0) != -1
+    return gameState.guessedWords.indexOf(word.toLowerCase(), 0) != -1
   }
 
   const redactPartially = (word: string) => {
@@ -124,24 +161,26 @@ const HomeInternal: NextPage = () => {
     }).join(""))
 
 
-    if(!solvedOnce && redactPartially(solution.filename) == solution.filename){
+    if (!solvedOnce && redactPartially(solution.filename) == solution.filename) {
       toast.success("Good job!", {id: "solved", duration: 2000})
       setSolvedOnce(true)
     }
-  }, [guessedWords])
+  }, [gameState])
 
   let onSubmit: FormEventHandler = (e) => {
     e.preventDefault();
 
-    setGuessedWords((prev: string[]) => {
+    setGameState((prevState: GameState) => {
       // add to the list in case it's not there yet
       if (!isGuessed(currentWord)) {
-        return [...prev, currentWord.toLowerCase()];
+        return {
+          ...prevState,
+          guessedWords: [...prevState.guessedWords, currentWord.toLowerCase()]
+        };
       } else {
-        return prev;
+        return prevState;
       }
     })
-
     setCurrentWord("")
   };
 
@@ -155,7 +194,7 @@ const HomeInternal: NextPage = () => {
     })
 
     // count guessed words
-    for (const each of guessedWords) {
+    for (const each of gameState.guessedWords) {
       if (stringToCount.has(each)) {
         guessed += stringToCount.get(each)!
       }
@@ -186,10 +225,24 @@ const HomeInternal: NextPage = () => {
 
       <main>
 
-        <div className="flex flex-col min-h-screen sm:flex-row">
+        <div className="flex flex-col min-h-screen sm:flex-row dark">
           <div className="border-r border-r-gray-300">
-            <div className="p-2 pl-4 text-sm w-full bg-gray-700 w-full uppercase">
-              Debuggle
+            <div className="p-2 pl-4 text-sm w-full bg-gray-700 w-full uppercase flex">
+              <div className="flex-grow">
+                Debuggle
+              </div>
+
+              <div className="flex flex-row">
+                <InformationCircleIcon className='h-5 w-5 mr-2 cursor-pointer dark:stroke-white'
+                                       onClick={() => setPopupToShow(PopupToShow.HELP)}/>
+                <CogIcon className='h-5 w-5 mr-2 cursor-pointer dark:stroke-white'
+                         onClick={() => setPopupToShow(PopupToShow.SETTINGS)}/>
+                {/*<ChartBarIcon className='h-5 w-5 mr-3 cursor-pointer dark:stroke-white'*/}
+                {/*              onClick={() => setPopupToShow(PopupToShow.STATISTICS)}/>*/}
+                {/*<LibraryIcon className='h-5 w-5 mr-2 cursor-pointer dark:stroke-white'*/}
+                {/*             onClick={() => setPopupToShow(PopupToShow.CHANGELOG)}/>*/}
+              </div>
+
             </div>
             <div className="w-full bg-gray-600 h-1.5"></div>
 
@@ -201,11 +254,16 @@ const HomeInternal: NextPage = () => {
               </form>
 
               <div className="mt-4 gap-1 flex flex-col ">
-                {guessedWords?.map((each: string) => {
+                {gameState.guessedWords?.filter((each:string) => {
+                  if(settings.hideZero){
+                    return stringToCount.has(each.toLowerCase());
+                  }
+                  return true;
+                }).map((each: string) => {
                   return <div key={each} className="px-1 flex hover:bg-gray-700 ">
                     <div className="flex-grow">{each}</div>
                     <div>{
-                      !stringToCount.has(each.toLowerCase()) ?  0 : stringToCount.get(each.toLowerCase())
+                      !stringToCount.has(each.toLowerCase()) ? 0 : stringToCount.get(each.toLowerCase())
                     }</div>
                   </div>
                 })}
@@ -234,6 +292,10 @@ const HomeInternal: NextPage = () => {
             </div>
           </div>
         </div>
+
+        <PopupManager popupToShow={popupToShow} onClose={() => setPopupToShow(PopupToShow.NONE)}
+                      settings={settings} setSettings={setSettings} gameState={gameState} stats={stats}/>
+
         <div><Toaster/></div>
       </main>
 
