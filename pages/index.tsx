@@ -155,6 +155,7 @@ const HomeInternal: NextPage = () => {
         <title>Debuggle :: Find a known algorithm</title>
         <link rel="icon" href="/favicon.ico"/>
 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
         <meta name="description"
               content="Find a known redacted algorithm word by word. Every day a new algorithm"/>
@@ -170,8 +171,7 @@ const HomeInternal: NextPage = () => {
 
       <main>
 
-        <div className="flex flex-row min-h-screen">
-
+        <div className="flex flex-col min-h-screen sm:flex-row">
           <div className="border-r border-r-gray-300">
             <div className="p-2 pl-4 text-sm w-full bg-gray-700 w-full uppercase">
               Debuggle
