@@ -4,6 +4,7 @@ import {FormEventHandler, useEffect, useState} from "react";
 import {solution} from "../components/puzzle";
 import jsTokens, {Token} from "js-tokens";
 import dynamic from "next/dynamic";
+import classNames from "classnames";
 
 const solutionTokens = Array.from(jsTokens(solution.code))
 const stringToCount = bla()
@@ -149,6 +150,8 @@ const HomeInternal: NextPage = () => {
     return `${Math.floor(guessed / length * 100)}%`
   }
 
+  const solved = redactPartially(solution.filename) == solution.filename
+
   return (
     <div className="bg-[#252526] text-white">
       <Head>
@@ -197,13 +200,15 @@ const HomeInternal: NextPage = () => {
 
           </div>
           <div className="font-mono w-full">
-            <div className="p-2 text-sm w-full bg-gray-700 italic w-full">
+            <div className={classNames(
+              "p-2 text-sm w-full italic w-full",
+              {'bg-green-800': solved, 'bg-gray-700': !solved}
+              )}>
               {redactPartially(solution.filename)}<span>.{solution.extension}</span>
-
             </div>
             <div>
               <div className="w-full bg-gray-200 h-1.5">
-                <div className="bg-gray-600 h-1.5" style={{width: getPercentage()}}></div>
+                <div className="bg-gray-600 h-1.5" style={{width: getPercentage()}}/>
               </div>
 
               <div className="p-2 text-left">
