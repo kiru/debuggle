@@ -2,7 +2,8 @@ export const solution = {
   id: 1,
   filename: "quickSort",
   extension: "js",
-  code: `function quickSort(originalArray) {
+  code: `// source https://github.com/trekhleb/javascript-algorithms 
+function quickSort(originalArray) {
     // Clone original array to prevent it from modification
     const array = [...originalArray];
 
