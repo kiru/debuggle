@@ -230,7 +230,7 @@ const HomeInternal: NextPage = () => {
         <meta property="og:description"
               content="Find a known redacted algorithm word by word. Every day a new algorithm"/>
         <meta property="og:title" content="Find a known redacted algorithm word by word. Every day a new algorithm"/>
-        {/*<meta property="og:image" content="https://learnle.net/TwitterCard.png"/>*/}
+        <meta property="og:image" content="https://debuggle.net/TwitterCard.png"/>
       </Head>
 
       <main>
