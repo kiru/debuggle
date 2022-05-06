@@ -218,19 +218,6 @@ const HomeInternal: NextPage = () => {
       <Head>
         <title>Debuggle :: Find a known algorithm</title>
         <link rel="icon" href="/favicon.ico"/>
-
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-        <meta name="description"
-              content="Find a known redacted algorithm word by word. Every day a new algorithm"/>
-
-        <meta property="og:url" content="https://debuggle.net/"/>
-        <meta property="og:type" content="website"/>
-        <meta property="og:site_name" content="Debuggle"/>
-        <meta property="og:description"
-              content="Find a known redacted algorithm word by word. Every day a new algorithm"/>
-        <meta property="og:title" content="Find a known redacted algorithm word by word. Every day a new algorithm"/>
-        <meta property="og:image" content="https://debuggle.net/TwitterCard.png"/>
       </Head>
 
       <main>
