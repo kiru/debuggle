@@ -222,10 +222,10 @@ let ExplanationDialog = (props: { open: boolean, setOpen: (value: boolean) => vo
                     </div>
                     <div>
                       You have unlimited tries. Your goal is to guess the filename.
-                      Once you guessed the full filename, the whole code will to be revealed.
+                      Once you guessed the full filename, the whole code will be revealed.
                     </div>
                     <div>
-                      The numbers shows you how many times the word appears.
+                      The numbers show you how many times the word appears.
                       A new code-puzzle will be published every day.
                     </div>
 
