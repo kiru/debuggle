@@ -219,7 +219,6 @@ const HomeInternal: NextPage = () => {
         <title>Debuggle :: Find a known algorithm</title>
         <link rel="icon" href="/favicon.ico"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
       </Head>
 
       <main>
@@ -282,7 +281,7 @@ const HomeInternal: NextPage = () => {
                 <div className="bg-gray-600 h-1.5 transition-all duration-300" style={{width: getPercentage()}}/>
               </div>
 
-              <div className="p-2 text-left">
+              <div className="p-2 text-left overflow-auto">
                 <pre className="tracking-tight">
                   {!gameState.gameEnded && redactedCode}
                   {gameState.gameEnded && solution.code}
