@@ -244,14 +244,14 @@ const HomeInternal: NextPage = () => {
             </div>
             <div className="w-full bg-gray-600 h-1.5"></div>
 
-            <div className="p-4">
+            <div className="p-4 ">
               <form action="" onSubmit={onSubmit}>
                 <input name={"text"} className="rounded p-2 text-black focus:outline-slate-400 rounded-sm"
                        onChange={e => setCurrentWord(e.target.value)}
                        value={currentWord}/>
               </form>
 
-              <div className="mt-4 gap-1 flex flex-col ">
+              <div className="mt-4 gap-1 flex flex-col max-h-36 sm:max-h-full overflow-auto">
                 {gameState.guessedWords?.filter((each: string) => {
                   if (settings.hideZero) {
                     return stringToCount.has(each.toLowerCase());

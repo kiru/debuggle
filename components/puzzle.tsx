@@ -1,44 +1,30 @@
 export const solution = {
-  id: 1,
-  filename: "quickSort",
+  id: 2,
+  filename: "fibonacci",
   extension: "js",
   code: `// source https://github.com/trekhleb/javascript-algorithms 
-function quickSort(originalArray) {
-    // Clone original array to prevent it from modification
-    const array = [...originalArray];
+function fibonacci(n) {
+  const fibSequence = [1];
 
-    // If array has less than or equal to one elements then it is already sorted
-    if (array.length <= 1) {
-      return array;
-    }
+  let currentValue = 1;
+  let previousValue = 0;
 
-    // Init left and right arrays
-    const leftArray = [];
-    const rightArray = [];
-
-    // Take the first element of array as a pivot
-    const pivotElement = array.shift();
-    const centerArray = [pivotElement];
-
-    // Split all array elements between left, center and right arrays
-    while (array.length) {
-      const currentElement = array.shift();
-
-      if (currentElement == pivotElement) {
-        centerArray.push(currentElement);
-      } else if (currentElement < pivotElement) {
-        leftArray.push(currentElement);
-      } else {
-        rightArray.push(currentElement);
-      }
-    }
-
-    // Sort left and right arrays
-    const leftArraySorted = this.sort(leftArray);
-    const rightArraySorted = this.sort(rightArray);
-
-    // Let's now join sorted left array with center array and with sorted right array
-    return leftArraySorted.concat(centerArray, rightArraySorted);
+  if (n === 1) {
+    return fibSequence;
   }
+
+  let iterationsCounter = n - 1;
+
+  while (iterationsCounter) {
+    currentValue += previousValue;
+    previousValue = currentValue - previousValue;
+
+    fibSequence.push(currentValue);
+
+    iterationsCounter -= 1;
+  }
+
+  return fibSequence;
+}
 `
 }
