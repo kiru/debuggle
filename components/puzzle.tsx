@@ -1,5 +1,5 @@
 export const solution = {
-  id: 2,
+  id: 3,
   filename: "insertionSort",
   extension: "js",
   code: `// source https://github.com/trekhleb/javascript-algorithms 
