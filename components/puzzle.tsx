@@ -1,36 +1,21 @@
 export const solution = {
-  id: 3,
-  filename: "insertionSort",
+  id: 4,
+  filename: "isPalindrome",
   extension: "js",
-  code: `// source https://github.com/trekhleb/javascript-algorithms 
-function insertionSort(originalArray) {
-  const array = [...originalArray];
+  code: `// source https://github.com/trekhleb/javascript-algorithms/tree/master/src/algorithms/string/palindrome
+function isPalindrome(string) {
+  let left = 0;
+  let right = string.length - 1;
 
-  // Go through all array elements...
-  for (let i = 1; i < array.length; i += 1) {
-    let currentIndex = i;
-
-    // Check if previous element is greater than current element.
-    // If so, swap the two elements.
-    while (
-      array[currentIndex - 1] !== undefined
-      && (array[currentIndex] < array[currentIndex - 1])
-    ) {
-      // Swap the elements.
-      [
-        array[currentIndex - 1],
-        array[currentIndex],
-      ] = [
-        array[currentIndex],
-        array[currentIndex - 1],
-      ];
-
-      // Shift current index left.
-      currentIndex -= 1;
+  while (left < right) {
+    if (string[left] !== string[right]) {
+      return false;
     }
+    left += 1;
+    right -= 1;
   }
 
-  return array;
+  return true;
 }
 `
 }
