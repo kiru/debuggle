@@ -3,11 +3,6 @@ export const solution = {
   filename: "countingSort",
   extension: "js",
   code: `// source https://github.com/trekhleb/javascript-algorithms
-/**
- * @param {number[]} originalArray
- * @param {number} [smallestElement]
- * @param {number} [biggestElement]
- */
 countingSort(originalArray, smallestElement = undefined, biggestElement = undefined) {
   // Init biggest and smallest elements in array in order to build number bucket array later.
   let detectedSmallestElement = smallestElement || 0;
