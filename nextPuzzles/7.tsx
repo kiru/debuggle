@@ -1,5 +1,5 @@
 export const solution = {
-  id: 6,
+  id: 7,
   filename: "countingSort",
   extension: "js",
   code: `// source https://github.com/trekhleb/javascript-algorithms
