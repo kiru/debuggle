@@ -1,8 +1,8 @@
 export const solution = {
-  id: 8,
+  id: 9,
   filename: "Stack",
   extension: "js",
-  code: `// Class declaration
+  code: `// https://github.com/TheAlgorithms/JavaScript/blob/master/Data-Structures/Stack/StackES6.js
 class Stack {
   constructor () {
     this.stack = []
