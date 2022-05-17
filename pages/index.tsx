@@ -299,7 +299,7 @@ const HomeInternal: NextPage = () => {
 
       <div className="kiru m-4 gap-1">
         <a href="https://kiru.io/" target="_blank">
-          <img src="https://wordleart.kiru.io/mini-kiru.jpg" alt="Kiru Logo"
+          <img src="/mini-kiru.jpg" alt="Kiru Logo"
                className="h-6 bg-green-800 rounded hover:ring-green-800 hover:ring-2"/>
         </a>
         <a href="https://mathlegame.com/" target="_blank">
