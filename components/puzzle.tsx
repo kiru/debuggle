@@ -1,38 +1,66 @@
 export const solution = {
-  id: 11,
-  filename: "primeFactors",
+  id: 12,
+  filename: "longestCommonSubsequence",
   extension: "js",
-  code: `// https://github.com/trekhleb/javascript-algorithms/blob/master/src/algorithms/math/prime-factors/primeFactors.jsjj
+  code: `// https://raw.githubusercontent.com/trekhleb/javascript-algorithms/master/src/algorithms/sets/longest-common-subsequence/longestCommonSubsequence.js
 /**
- * Finds prime factors of a number.
- *
- * @param {number} n - the number that is going to be split into prime factors.
- * @returns {number[]} - array of prime factors.
+ * @param {string[]} set1
+ * @param {string[]} set2
+ * @return {string[]}
  */
-export function primeFactors(n) {
-  // Clone n to avoid function arguments override.
-  let nn = n;
+function longestCommonSubsequence(set1, set2) {
+  // Init LCS matrix.
+  const lcsMatrix = Array(set2.length + 1).fill(null).map(() => Array(set1.length + 1).fill(null));
 
-  // Array that stores the all the prime factors.
-  const factors = [];
+  // Fill first row with zeros.
+  for (let columnIndex = 0; columnIndex <= set1.length; columnIndex += 1) {
+    lcsMatrix[0][columnIndex] = 0;
+  }
 
-  // Running the loop till sqrt(n) instead of n to optimise time complexity from O(n) to O(sqrt(n)).
-  for (let factor = 2; factor <= Math.sqrt(nn); factor += 1) {
-    // Check that factor divides n without a reminder.
-    while (nn % factor === 0) {
-      // Overriding the value of n.
-      nn /= factor;
-      // Saving the factor.
-      factors.push(factor);
+  // Fill first column with zeros.
+  for (let rowIndex = 0; rowIndex <= set2.length; rowIndex += 1) {
+    lcsMatrix[rowIndex][0] = 0;
+  }
+
+  // Fill rest of the column that correspond to each of two strings.
+  for (let rowIndex = 1; rowIndex <= set2.length; rowIndex += 1) {
+    for (let columnIndex = 1; columnIndex <= set1.length; columnIndex += 1) {
+      if (set1[columnIndex - 1] === set2[rowIndex - 1]) {
+        lcsMatrix[rowIndex][columnIndex] = lcsMatrix[rowIndex - 1][columnIndex - 1] + 1;
+      } else {
+        lcsMatrix[rowIndex][columnIndex] = Math.max(
+          lcsMatrix[rowIndex - 1][columnIndex],
+          lcsMatrix[rowIndex][columnIndex - 1],
+        );
+      }
     }
   }
 
-  // The ultimate reminder should be a last prime factor,
-  // unless it is not 1 (since 1 is not a prime number).
-  if (nn !== 1) {
-    factors.push(nn);
+  // Calculate LCS based on LCS matrix.
+  if (!lcsMatrix[set2.length][set1.length]) {
+    // If the length of largest common string is zero then return empty string.
+    return [''];
   }
 
-  return factors;
+  const longestSequence = [];
+  let columnIndex = set1.length;
+  let rowIndex = set2.length;
+
+  while (columnIndex > 0 || rowIndex > 0) {
+    if (set1[columnIndex - 1] === set2[rowIndex - 1]) {
+      // Move by diagonal left-top.
+      longestSequence.unshift(set1[columnIndex - 1]);
+      columnIndex -= 1;
+      rowIndex -= 1;
+    } else if (lcsMatrix[rowIndex][columnIndex] === lcsMatrix[rowIndex][columnIndex - 1]) {
+      // Move left.
+      columnIndex -= 1;
+    } else {
+      // Move up.
+      rowIndex -= 1;
+    }
+  }
+
+  return longestSequence;
 }`
 }
