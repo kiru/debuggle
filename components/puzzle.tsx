@@ -1,66 +1,36 @@
 export const solution = {
-  id: 12,
-  filename: "longestCommonSubsequence",
+  id: 13,
+  filename: "bubbleSort",
   extension: "js",
-  code: `// https://raw.githubusercontent.com/trekhleb/javascript-algorithms/master/src/algorithms/sets/longest-common-subsequence/longestCommonSubsequence.js
-/**
- * @param {string[]} set1
- * @param {string[]} set2
- * @return {string[]}
- */
-function longestCommonSubsequence(set1, set2) {
-  // Init LCS matrix.
-  const lcsMatrix = Array(set2.length + 1).fill(null).map(() => Array(set1.length + 1).fill(null));
+  code: `// https://github.com/trekhleb/javascript-algorithms/tree/master/src/algorithms/sorting/bubble-sort
+function bubbleSort(originalArray) {
+  // Flag that holds info about whether the swap has occur or not.
+  let swapped = false;
+  // Clone original array to prevent its modification.
+  const array = [...originalArray];
 
-  // Fill first row with zeros.
-  for (let columnIndex = 0; columnIndex <= set1.length; columnIndex += 1) {
-    lcsMatrix[0][columnIndex] = 0;
-  }
+  for (let i = 1; i < array.length; i += 1) {
+    swapped = false;
 
-  // Fill first column with zeros.
-  for (let rowIndex = 0; rowIndex <= set2.length; rowIndex += 1) {
-    lcsMatrix[rowIndex][0] = 0;
-  }
+    for (let j = 0; j < array.length - i; j += 1) {
+      // Swap elements if they are in wrong order.
+      if (array[j + 1] < array[j]) {
+        [array[j], array[j + 1]] = [array[j + 1], array[j]];
 
-  // Fill rest of the column that correspond to each of two strings.
-  for (let rowIndex = 1; rowIndex <= set2.length; rowIndex += 1) {
-    for (let columnIndex = 1; columnIndex <= set1.length; columnIndex += 1) {
-      if (set1[columnIndex - 1] === set2[rowIndex - 1]) {
-        lcsMatrix[rowIndex][columnIndex] = lcsMatrix[rowIndex - 1][columnIndex - 1] + 1;
-      } else {
-        lcsMatrix[rowIndex][columnIndex] = Math.max(
-          lcsMatrix[rowIndex - 1][columnIndex],
-          lcsMatrix[rowIndex][columnIndex - 1],
-        );
+        // Register the swap.
+        swapped = true;
       }
     }
-  }
 
-  // Calculate LCS based on LCS matrix.
-  if (!lcsMatrix[set2.length][set1.length]) {
-    // If the length of largest common string is zero then return empty string.
-    return [''];
-  }
-
-  const longestSequence = [];
-  let columnIndex = set1.length;
-  let rowIndex = set2.length;
-
-  while (columnIndex > 0 || rowIndex > 0) {
-    if (set1[columnIndex - 1] === set2[rowIndex - 1]) {
-      // Move by diagonal left-top.
-      longestSequence.unshift(set1[columnIndex - 1]);
-      columnIndex -= 1;
-      rowIndex -= 1;
-    } else if (lcsMatrix[rowIndex][columnIndex] === lcsMatrix[rowIndex][columnIndex - 1]) {
-      // Move left.
-      columnIndex -= 1;
-    } else {
-      // Move up.
-      rowIndex -= 1;
+    // If there were no swaps then array is already sorted and there is
+    // no need to proceed.
+    if (!swapped) {
+      return array;
     }
   }
 
-  return longestSequence;
-}`
+  return array;
+}  
+`
 }
+
