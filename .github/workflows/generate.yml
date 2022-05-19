@@ -15,7 +15,9 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.8 #install the python needed
-      - name: Copy puzlles to production
+      - name: Copy puzzles to production
+        env:
+          HEALTHCHECK_URL: {{ secrets.HEALTHCHECK_URL }}
         run: |
           python newPuzzle.py
       - name: Commit report # this will trigger a redeploy

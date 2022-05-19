@@ -4,6 +4,7 @@ from random import choices
 import socket
 import urllib.request
 import os.path
+import os
 
 # We remember in a file which id has been published
 last_id_lines = []
@@ -35,7 +36,8 @@ for r in range(next_publish, next_publish+5):
 if enough_puzzles == True:
     # Ensure the script worked
     try:
-        urllib.request.urlopen("https://hc-ping.com/f9d23c40-b656-40dc-a6ff-aef48585563b", timeout=10)
+        url = os.envrion("HEALTHCHECK_URL")
+        urllib.request.urlopen(url, timeout=10)
     except socket.error as e:
         # Log ping failure here...
         print("Ping failed: %s" % e)
