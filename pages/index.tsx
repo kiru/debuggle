@@ -255,9 +255,9 @@ const HomeInternal: NextPage = () => {
                 {redactPartially(solution.filename)}<span>.{solution.extension}</span>
               </div>
 
-              {/*<div className="bg-white text-black px-2 rounded-lg hover:bg-transparent hover:text-white cursor-pointer">*/}
-              {/*  <a href="https://github.com/kiru/debuggle" target="_blank">Checkout on GitHub</a>*/}
-              {/*</div>*/}
+              <div className="bg-white text-black px-2 rounded-lg hover:bg-transparent hover:text-white cursor-pointer">
+                <a href="https://github.com/kiru/debuggle" target="_blank">Checkout on GitHub</a>
+              </div>
             </div>
 
             <div>
