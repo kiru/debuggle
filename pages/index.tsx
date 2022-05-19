@@ -2,15 +2,14 @@ import type {NextPage} from 'next'
 import Head from 'next/head'
 import {FormEventHandler, useEffect, useState} from "react";
 import {solution} from "../components/puzzle";
-import jsTokens, {Token} from "js-tokens";
+import jsTokens from "js-tokens";
 import dynamic from "next/dynamic";
 import classNames from "classnames";
-import {string} from "prop-types";
 import {toast, Toaster} from 'react-hot-toast';
-import {PopupManager, PopupToShow} from "../components/modals/Dialogs";
+import {PopupManager, PopupToShow} from "../components/Dialogs";
 import {GameState, GameStats, Settings} from "../lib/types";
-import {debug} from "../lib/commons";
-import {CogIcon, InformationCircleIcon, LibraryIcon} from "@heroicons/react/solid";
+import {debug, useStickyState} from "../lib/commons";
+import {CogIcon, InformationCircleIcon} from "@heroicons/react/solid";
 
 const solutionTokens = Array.from(jsTokens(solution.code))
 const stringToCount = calculateOccurence()
@@ -47,29 +46,10 @@ function calculateOccurence() {
 }
 
 
-function useStickyState<T>(defaultValue: T, key: string) {
-  const [value, setValue] = useState(() => {
-    const stickyValue = window.localStorage.getItem(key);
-
-    // @ts-ignore
-    return stickyValue !== null
-      ? JSON.parse(stickyValue)
-      : defaultValue;
-  });
-
-  useEffect(() => {
-    // @ts-ignore
-    window.localStorage.setItem(key, JSON.stringify(value));
-  }, [key, value]);
-
-  return [value, setValue];
-}
-
 const Home = dynamic(
   () => Promise.resolve(HomeInternal),
   {ssr: false}
 );
-
 
 const HomeInternal: NextPage = () => {
   const [redactedCode, setRedactedCode] = useState<string>("")
@@ -135,7 +115,7 @@ const HomeInternal: NextPage = () => {
 
   useEffect(() => {
     setRedactedCode(solutionTokens.map(token => {
-      // in case of comment, the '//' is only given as a line
+      // in case of comment, the '//' is only given as a line, so split the words inside the comment
       if (token.type == "SingleLineComment") {
         return token.value.split(" ")
           .map(singleWord => {
@@ -157,14 +137,14 @@ const HomeInternal: NextPage = () => {
       }
     }).join(""))
 
-
-    if (!gameState.gameEnded) {
+    const gameHasNotEndedYet = !gameState.gameEnded
+    if (gameHasNotEndedYet) {
       let isSolved = false
       if (settings.hardCore) {
-        if (getPercentage() == "100%") {
-          isSolved = true;
-        }
+        // are all the words revealed?
+        isSolved = getPercentage() == "100%";
       } else {
+        // is filename revealed?
         isSolved = redactPartially(solution.filename) == solution.filename
       }
 
@@ -181,7 +161,7 @@ const HomeInternal: NextPage = () => {
     e.preventDefault();
 
     setGameState((prevState: GameState) => {
-      // add to the list in case it's not there yet
+      // add the new word to the list in case it's not there yet
       if (!isGuessed(currentWord)) {
         return {
           ...prevState,
@@ -235,14 +215,10 @@ const HomeInternal: NextPage = () => {
                                        onClick={() => setPopupToShow(PopupToShow.HELP)}/>
                 <CogIcon className='h-5 w-5 mr-2 cursor-pointer dark:stroke-white'
                          onClick={() => setPopupToShow(PopupToShow.SETTINGS)}/>
-                {/*<ChartBarIcon className='h-5 w-5 mr-3 cursor-pointer dark:stroke-white'*/}
-                {/*              onClick={() => setPopupToShow(PopupToShow.STATISTICS)}/>*/}
-                {/*<LibraryIcon className='h-5 w-5 mr-2 cursor-pointer dark:stroke-white'*/}
-                {/*             onClick={() => setPopupToShow(PopupToShow.CHANGELOG)}/>*/}
               </div>
 
             </div>
-            <div className="w-full bg-gray-600 h-1.5"></div>
+            <div className="w-full bg-gray-600 h-1.5"/>
 
             <div className="p-4 ">
               <form action="" onSubmit={onSubmit}>
@@ -292,12 +268,12 @@ const HomeInternal: NextPage = () => {
         </div>
 
         <PopupManager popupToShow={popupToShow} onClose={() => setPopupToShow(PopupToShow.NONE)}
-                      settings={settings} setSettings={setSettings} gameState={gameState} stats={stats}/>
+                      settings={settings} setSettings={setSettings} gameState={gameState}/>
 
         <div><Toaster/></div>
       </main>
 
-      <div className="kiru m-4 gap-1">
+      <div className="fixed right-0 bottom-0 flex m-4 gap-1">
         <a href="https://kiru.io/" target="_blank">
           <img src="/mini-kiru.jpg" alt="Kiru Logo"
                className="h-6 bg-green-800 rounded hover:ring-green-800 hover:ring-2"/>

@@ -1,7 +1,6 @@
 # Debugle
 
 TODO:
-□ add twitter-card
 □ add puzzles for the next 10 days
-□ look into why it looks ugly on mobile
-□ publish on reddit
+□ GO OSS: Move repo to different branch so that Google doesn't crawl it: ottps://stackoverflow.com/questions/15844905/how-to-stop-google-indexing-my-github-repository
+□ GO OSS: Refactor code an dremove

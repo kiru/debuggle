@@ -9,6 +9,7 @@ export function debug(...message) {
   }
 }
 
+// From: https://www.joshwcomeau.com/snippets/react-hooks/use-sticky-state/
 export function useStickyState<T>(defaultValue: T, key: string) {
   const [value, setValue] = useState(() => {
     const stickyValue = window.localStorage.getItem(key);
@@ -31,25 +32,3 @@ export function useStickyState<T>(defaultValue: T, key: string) {
 }
 
 
-export function sumTogether(timePerRowInMs: number[]): number {
-  let sum: number = 0;
-  timePerRowInMs
-    .filter(each => each != null)
-    .forEach(each => sum += each)
-  return sum;
-}
-
-export function toSum(currentGuess: string): number {
-  if(currentGuess == undefined){
-    return 0;
-  }
-
-  let first = parseInt(currentGuess[0])
-  let second = parseInt(currentGuess[1])
-  let third = parseInt(currentGuess[2])
-  let fourth = parseInt(currentGuess[3])
-  let fifth = parseInt(currentGuess[4])
-
-  let currentGuessSum = first * 10000 + second * 1000 + third * 100 + fourth * 10 + fifth;
-  return currentGuessSum;
-}

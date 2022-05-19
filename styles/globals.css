@@ -3,11 +3,3 @@
 @tailwind utilities;
 
 
-.kiru {
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    padding: 1px 2px;
-    display: flex;
-    align-items: center;
-}

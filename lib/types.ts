@@ -1,5 +1,3 @@
-import {string} from "prop-types";
-
 export interface Settings {
   firstExplanation: boolean,
   hardCore: boolean,
