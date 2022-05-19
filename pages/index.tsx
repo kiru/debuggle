@@ -45,7 +45,8 @@ function calculateOccurence() {
   return stringToCount;
 }
 
-
+// For some reason the meta tags were not generated statically
+// This ensure that everything is generated statically
 const Home = dynamic(
   () => Promise.resolve(HomeInternal),
   {ssr: false}
@@ -247,11 +248,18 @@ const HomeInternal: NextPage = () => {
           </div>
           <div className="font-mono w-full">
             <div className={classNames(
-              "p-2 text-sm w-full italic w-full",
+              "flex justify-between p-2 text-sm w-full italic w-full",
               {'bg-green-800': gameState.gameEnded, 'bg-gray-700': !gameState.gameEnded}
             )}>
-              {redactPartially(solution.filename)}<span>.{solution.extension}</span>
+              <div>
+                {redactPartially(solution.filename)}<span>.{solution.extension}</span>
+              </div>
+
+              {/*<div className="bg-white text-black px-2 rounded-lg hover:bg-transparent hover:text-white cursor-pointer">*/}
+              {/*  <a href="https://github.com/kiru/debuggle" target="_blank">Checkout on GitHub</a>*/}
+              {/*</div>*/}
             </div>
+
             <div>
               <div className="w-full bg-gray-200 h-1.5">
                 <div className="bg-gray-600 h-1.5 transition-all duration-300" style={{width: getPercentage()}}/>
