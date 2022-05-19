@@ -1,36 +1,52 @@
 export const solution = {
-  id: 13,
-  filename: "bubbleSort",
+  id: 14,
+  filename: "bellmanFord",
   extension: "js",
-  code: `// https://github.com/trekhleb/javascript-algorithms/tree/master/src/algorithms/sorting/bubble-sort
-function bubbleSort(originalArray) {
-  // Flag that holds info about whether the swap has occur or not.
-  let swapped = false;
-  // Clone original array to prevent its modification.
-  const array = [...originalArray];
+  code: `// https://github.com/trekhleb/javascript-algorithms/tree/master/src/algorithms/graph/bellman-ford
+/**
+ * @param {Graph} graph
+ * @param {GraphVertex} startVertex
+ * @return {{distances, previousVertices}}
+ */
+function bellmanFord(graph, startVertex) {
+  const distances = {};
+  const previousVertices = {};
 
-  for (let i = 1; i < array.length; i += 1) {
-    swapped = false;
-
-    for (let j = 0; j < array.length - i; j += 1) {
-      // Swap elements if they are in wrong order.
-      if (array[j + 1] < array[j]) {
-        [array[j], array[j + 1]] = [array[j + 1], array[j]];
-
-        // Register the swap.
-        swapped = true;
-      }
+  // Init all distances with infinity assuming that currently we can't reach
+  // any of the vertices except start one.
+  distances[startVertex.getKey()] = 0;
+  graph.getAllVertices().forEach((vertex) => {
+    previousVertices[vertex.getKey()] = null;
+    if (vertex.getKey() !== startVertex.getKey()) {
+      distances[vertex.getKey()] = Infinity;
     }
+  });
 
-    // If there were no swaps then array is already sorted and there is
-    // no need to proceed.
-    if (!swapped) {
-      return array;
-    }
+  // We need (|V| - 1) iterations.
+  for (let iteration = 0; iteration < (graph.getAllVertices().length - 1); iteration += 1) {
+    // During each iteration go through all vertices.
+    Object.keys(distances).forEach((vertexKey) => {
+      const vertex = graph.getVertexByKey(vertexKey);
+
+      // Go through all vertex edges.
+      graph.getNeighbors(vertex).forEach((neighbor) => {
+        const edge = graph.findEdge(vertex, neighbor);
+        // Find out if the distance to the neighbor is shorter in this iteration
+        // then in previous one.
+        const distanceToVertex = distances[vertex.getKey()];
+        const distanceToNeighbor = distanceToVertex + edge.weight;
+        if (distanceToNeighbor < distances[neighbor.getKey()]) {
+          distances[neighbor.getKey()] = distanceToNeighbor;
+          previousVertices[neighbor.getKey()] = vertex;
+        }
+      });
+    });
   }
 
-  return array;
-}  
-`
+  return {
+    distances,
+    previousVertices,
+  };
+}`
 }
 
