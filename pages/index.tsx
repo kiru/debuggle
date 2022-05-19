@@ -14,6 +14,26 @@ import {CogIcon, InformationCircleIcon} from "@heroicons/react/solid";
 const solutionTokens = Array.from(jsTokens(solution.code))
 const stringToCount = calculateOccurence()
 
+
+const isGuessed = (word: string, gameState: GameState) => {
+  return gameState.guessedWords.indexOf(word.toLowerCase(), 0) != -1
+}
+
+
+const redactPartially = (word: string, gameState: GameState) => {
+  return word.replace(/([a-z])([A-Z])/g, '$1 $2')
+    .split(" ")
+    .map(each => {
+      if (isGuessed(each, gameState)) {
+        return each
+      } else {
+        return "█".repeat(each.length)
+      }
+    })
+    .join("")
+}
+
+
 function calculateOccurence() {
   const stringToCount = new Map<string, number>()
 
@@ -52,8 +72,53 @@ const Home = dynamic(
   {ssr: false}
 );
 
+
+const CodeViewer = (prop: { gameState: GameState }) => {
+  const [redactedCode, setRedactedCode] = useState<JSX.Element>(<div/>)
+  const [hoveredWord, setHoveredWord] = useState<string>("")
+
+  useEffect(() => {
+    setRedactedCode(<div>{solutionTokens.map(token => {
+      // in case of comment, the '//' is only given as a line, so split the words inside the comment
+      if (token.type == "SingleLineComment") {
+        let comment = token.value.split(" ")
+          .map(singleWord => {
+            return isGuessed(singleWord, prop.gameState) ? singleWord : redactPartially(singleWord, prop.gameState);
+          }).join(" ");
+        return <span>{comment}</span>;
+      } else {
+        // if word is guessed, reveal
+        if (isGuessed(token.value, prop.gameState)) {
+          return <span>{token.value}</span>;
+        } else {
+          // otherwise print the line-space
+          if (token.type == "WhiteSpace") {
+            return <span>{Array(token.value.length).fill("").map(each => {
+              return <>&nbsp;</>
+            })}</span>;
+          }
+
+          if (token.type == "LineTerminatorSequence") {
+            return <br/>
+          }
+          // or replace by placeholder
+          return <span className={classNames({"text-blue-300": token.value == hoveredWord})}
+                       onMouseEnter={() => setHoveredWord(token.value)}
+                       onMouseLeave={() => setHoveredWord("")}>{redactPartially(token.value, prop.gameState)}</span>
+        }
+      }
+    })}</div>)
+  }, [prop.gameState, hoveredWord])
+
+  return (
+    <div className="p-2 text-left overflow-auto">
+      {!prop.gameState.gameEnded && redactedCode}
+      <pre className="tracking-tight">{prop.gameState.gameEnded && solution.code}</pre>
+    </div>
+  )
+}
+
 const HomeInternal: NextPage = () => {
-  const [redactedCode, setRedactedCode] = useState<string>("")
   const [currentWord, setCurrentWord] = useState<string>("")
   const [popupToShow, setPopupToShow] = useState<PopupToShow>(PopupToShow.NONE);
   const [stats, setStats] = useStickyState<GameStats>({
@@ -92,51 +157,12 @@ const HomeInternal: NextPage = () => {
     }
   }, [gameState])
 
-  const isGuessed = (word: string) => {
-    return gameState.guessedWords.indexOf(word.toLowerCase(), 0) != -1
-  }
-
-  const redactPartially = (word: string) => {
-    return word.replace(/([a-z])([A-Z])/g, '$1 $2')
-      .split(" ")
-      .map(each => {
-        if (isGuessed(each)) {
-          return each
-        } else {
-          return "█".repeat(each.length)
-        }
-      })
-      .join("")
-  }
-
   useEffect(() => {
     console.log("Hi there. Are you looking for the solution in the code? " +
       "It is easier than you think. If you see this message, ping me on twitter @kiru_io");
   }, [])
 
   useEffect(() => {
-    setRedactedCode(solutionTokens.map(token => {
-      // in case of comment, the '//' is only given as a line, so split the words inside the comment
-      if (token.type == "SingleLineComment") {
-        return token.value.split(" ")
-          .map(singleWord => {
-            return isGuessed(singleWord) ? singleWord : redactPartially(singleWord);
-          }).join(" ");
-
-      } else {
-        // if word is guessed, reveal
-        if (isGuessed(token.value)) {
-          return token.value;
-        } else {
-          // otherwise print the line-space
-          if (token.type == "WhiteSpace" || token.type == "LineTerminatorSequence") {
-            return token.value;
-          }
-          // or replace by placeholder
-          return redactPartially(token.value)
-        }
-      }
-    }).join(""))
 
     const gameHasNotEndedYet = !gameState.gameEnded
     if (gameHasNotEndedYet) {
@@ -146,7 +172,7 @@ const HomeInternal: NextPage = () => {
         isSolved = getPercentage() == "100%";
       } else {
         // is filename revealed?
-        isSolved = redactPartially(solution.filename) == solution.filename
+        isSolved = redactPartially(solution.filename, gameState) == solution.filename
       }
 
       if (isSolved) {
@@ -163,7 +189,7 @@ const HomeInternal: NextPage = () => {
 
     setGameState((prevState: GameState) => {
       // add the new word to the list in case it's not there yet
-      if (!isGuessed(currentWord)) {
+      if (!isGuessed(currentWord, gameState)) {
         return {
           ...prevState,
           guessedWords: [...prevState.guessedWords, currentWord.toLowerCase()]
@@ -252,7 +278,8 @@ const HomeInternal: NextPage = () => {
               {'bg-green-800': gameState.gameEnded, 'bg-gray-700': !gameState.gameEnded}
             )}>
               <div>
-                {redactPartially(solution.filename)}<span>.{solution.extension}</span>
+                {/*Show filename */}
+                {redactPartially(solution.filename, gameState)}<span>.{solution.extension}</span>
               </div>
 
               <div className="bg-white text-black px-2 rounded-lg hover:bg-transparent hover:text-white cursor-pointer">
@@ -265,12 +292,7 @@ const HomeInternal: NextPage = () => {
                 <div className="bg-gray-600 h-1.5 transition-all duration-300" style={{width: getPercentage()}}/>
               </div>
 
-              <div className="p-2 text-left overflow-auto">
-                <pre className="tracking-tight">
-                  {!gameState.gameEnded && redactedCode}
-                  {gameState.gameEnded && solution.code}
-                </pre>
-              </div>
+              <CodeViewer gameState={gameState}/>
             </div>
           </div>
         </div>
@@ -287,13 +309,16 @@ const HomeInternal: NextPage = () => {
                className="h-6 bg-green-800 rounded hover:ring-green-800 hover:ring-2"/>
         </a>
         <a href="https://mathlegame.com/" target="_blank">
-          <img src="/mathle-icon.png" alt="Mathle-Logo" className="h-6 bg-green-800 rounded hover:ring-green-800 hover:ring-2"/>
+          <img src="/mathle-icon.png" alt="Mathle-Logo"
+               className="h-6 bg-green-800 rounded hover:ring-green-800 hover:ring-2"/>
         </a>
         <a href="https://reversle.net/" target="_blank">
-          <img src="/reversle-icon.png" alt="Kiru Logo" className="h-6 bg-green-800 rounded hover:ring-green-800 hover:ring-2"/>
+          <img src="/reversle-icon.png" alt="Kiru Logo"
+               className="h-6 bg-green-800 rounded hover:ring-green-800 hover:ring-2"/>
         </a>
         <a href="https://learnle.net/" target="_blank">
-          <img src="/learnle-icon.png" alt="Kiru Logo" className="h-6 bg-green-800 rounded hover:ring-green-800 hover:ring-2"/>
+          <img src="/learnle-icon.png" alt="Kiru Logo"
+               className="h-6 bg-green-800 rounded hover:ring-green-800 hover:ring-2"/>
         </a>
       </div>
     </div>
