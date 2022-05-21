@@ -1,52 +1,49 @@
 export const solution = {
-  id: 14,
-  filename: "bellmanFord",
+  id: 15,
+  filename: "quickSort",
   extension: "js",
-  code: `// https://github.com/trekhleb/javascript-algorithms/tree/master/src/algorithms/graph/bellman-ford
+  code: `// https://github.com/trekhleb/javascript-algorithms/tree/master/src/algorithms/sorting/quick-sort
 /**
- * @param {Graph} graph
- * @param {GraphVertex} startVertex
- * @return {{distances, previousVertices}}
+ * @param {*[]} originalArray
+ * @return {*[]}
  */
-function bellmanFord(graph, startVertex) {
-  const distances = {};
-  const previousVertices = {};
+function quickSort(originalArray) {
+  // Clone original array to prevent it from modification.
+  const array = [...originalArray];
 
-  // Init all distances with infinity assuming that currently we can't reach
-  // any of the vertices except start one.
-  distances[startVertex.getKey()] = 0;
-  graph.getAllVertices().forEach((vertex) => {
-    previousVertices[vertex.getKey()] = null;
-    if (vertex.getKey() !== startVertex.getKey()) {
-      distances[vertex.getKey()] = Infinity;
-    }
-  });
-
-  // We need (|V| - 1) iterations.
-  for (let iteration = 0; iteration < (graph.getAllVertices().length - 1); iteration += 1) {
-    // During each iteration go through all vertices.
-    Object.keys(distances).forEach((vertexKey) => {
-      const vertex = graph.getVertexByKey(vertexKey);
-
-      // Go through all vertex edges.
-      graph.getNeighbors(vertex).forEach((neighbor) => {
-        const edge = graph.findEdge(vertex, neighbor);
-        // Find out if the distance to the neighbor is shorter in this iteration
-        // then in previous one.
-        const distanceToVertex = distances[vertex.getKey()];
-        const distanceToNeighbor = distanceToVertex + edge.weight;
-        if (distanceToNeighbor < distances[neighbor.getKey()]) {
-          distances[neighbor.getKey()] = distanceToNeighbor;
-          previousVertices[neighbor.getKey()] = vertex;
-        }
-      });
-    });
+  // If array has less than or equal to one elements then it is already sorted.
+  if (array.length <= 1) {
+    return array;
   }
 
-  return {
-    distances,
-    previousVertices,
-  };
-}`
+  // Init left and right arrays.
+  const leftArray = [];
+  const rightArray = [];
+
+  // Take the first element of array as a pivot.
+  const pivotElement = array.shift();
+  const centerArray = [pivotElement];
+
+  // Split all array elements between left, center and right arrays.
+  while (array.length) {
+    const currentElement = array.shift();
+
+    if (this.comparator.equal(currentElement, pivotElement)) {
+      centerArray.push(currentElement);
+    } else if (currentElement < pivotElement) {
+      leftArray.push(currentElement);
+    } else {
+      rightArray.push(currentElement);
+    }
+  }
+
+  // Sort left and right arrays.
+  const leftArraySorted = this.sort(leftArray);
+  const rightArraySorted = this.sort(rightArray);
+
+  // Let's now join sorted left array with center array and with sorted right array.
+  return leftArraySorted.concat(centerArray, rightArraySorted);
+}
+`
 }
 
